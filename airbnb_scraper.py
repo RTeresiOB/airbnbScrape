@@ -17,14 +17,17 @@ import pause  # Easy daily scheduling
 # Parameters
 repeat_daily = True
 custom_datetime = None  # Enter a datetime object to change start time
-
-#  Define File Path
-date = datetime.strftime(datetime.now(), "%m_%d_%y")
-path = "/Users/RobertTeresi/Dropbox/Airbnb_Scrapes/airbnb_furloughed_" + \
-    date+".csv"
+path_to_data = "/Users/RobertTeresi/Dropbox/Airbnb_Scrapes/"
 
 # Define Geckodriver path
 geckodriver_path = r'/anaconda3/lib/python3.7/geckodriver'
+
+
+def path():
+    """Put current date at end of csv path."""
+    date = datetime.strftime(datetime.now(), "%m_%d_%y")
+    return(path_to_data + "airbnb_furloughed_" + date + ".csv")
+
 
 def catch_exception(f):
     """Run function and return error message and traceback if appropriate."""
@@ -146,6 +149,7 @@ class airbnb_scraper(webdriver.Firefox, metaclass=ErrorCatcher):
                     "a [aria-label='Next']").click()
             else:
                 next_page_exists = False
+        print("Scrape Completed.\n\n")
         self.close()
 
     def to_csv(self, path):
@@ -161,10 +165,16 @@ class airbnb_scraper(webdriver.Firefox, metaclass=ErrorCatcher):
         # Fill it with the data from the Employee cards
         for employee in self.employees:
             csvout = csvout.append(employee.data, ignore_index=True)
-        csvout.to_csv(path)
+        print("Saving Now.\n")
+        try:
+            csvout.to_csv(path())
+            print("Successfully saved.\n\n")
+        except Exception:
+            print("Error occurred while saving the csv.\n")
+            raise
 
 
-def main(path):
+def main():
     """Initialize the scraper, tell it to scrape, and export results."""
     scraper = airbnb_scraper()
     scraper.scrape()
@@ -175,9 +185,10 @@ def schedule(custom_datetime=None):
     """Schedule Script to run every day."""
     if not custom_datetime:
         tomorrow = datetime.now() + timedelta(days=1)
-        date
         run_time = datetime(2020, tomorrow.month, tomorrow.day, 8, 0)
+        print("Waiting until tomorrow at 8am to scrape.\n\n")
         pause.until(run_time)
+        print("Scraping now")
     else:
         pause.until(custom_datetime)
 
