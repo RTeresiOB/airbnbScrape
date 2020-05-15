@@ -16,7 +16,7 @@ import pause  # Easy daily scheduling
 
 # Parameters
 repeat_daily = True
-custom_datetime = None  # Enter a datetime object to change start time
+custom_datetime = None  # Enter a datetime object to change start time from 8A
 path_to_data = "/Users/RobertTeresi/Dropbox/Airbnb_Scrapes/"
 
 # Define Geckodriver path
@@ -174,13 +174,6 @@ class airbnb_scraper(webdriver.Firefox, metaclass=ErrorCatcher):
             raise
 
 
-def main():
-    """Initialize the scraper, tell it to scrape, and export results."""
-    scraper = airbnb_scraper()
-    scraper.scrape()
-    scraper.to_csv(path)
-
-
 def schedule(custom_datetime=None):
     """Schedule Script to run every day."""
     if not custom_datetime:
@@ -191,6 +184,13 @@ def schedule(custom_datetime=None):
         print("Scraping now")
     else:
         pause.until(custom_datetime)
+
+
+def main():
+    """Initialize the scraper, tell it to scrape, and export results."""
+    scraper = airbnb_scraper()
+    scraper.scrape()
+    scraper.to_csv(path)
 
 
 # Run the main function if this is main script
